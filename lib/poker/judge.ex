@@ -53,22 +53,18 @@ defmodule Poker.Judge do
   defp winner({_, b, c, _}, {_, f, g, _}) when b != f do
     res = is_greater(b, f)
 
-    if elem(res, 0) do
-      {c, "High card: #{number_to_char(elem(res, 1))}"}
-    else
-      {g, "High card: #{number_to_char(elem(res, 1))}"}
-    end
+      case elem(res, 1) do
+        :ok ->  {c, "High card: #{number_to_char(elem(res, 1))}"}
+        _ -> {g, "High card: #{number_to_char(elem(res, 1))}"}
+      end
+    
   end
 
   defp winner({_, _, _, _}, {_, _, _, _}), do: {"tie"}
 
-  defp is_greater(a, b) do
-    case hd(a) == hd(b) do
-      true -> is_greater(tl(a), tl(b))
-      false when hd(a) > hd(b) -> {true, hd(a)}
-      _ -> {false, hd(b)}
-    end
-  end
+  defp is_greater(a, b) when hd(a) > hd(b), do: {:ok, hd(a)}
+  defp is_greater(a, b) when hd(a) < hd(b), do: {:error, hd(b)}
+  defp is_greater(a, b), do: is_greater(tl(a), tl(b))
 
   defp stringify(suit), do: Atom.to_string(suit) |> String.replace("_", " ")
 
